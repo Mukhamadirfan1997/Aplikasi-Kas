@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Input Kas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 0;
+      }
+
+      /* Navbar */
+      nav {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+      }
+      nav a {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        padding: 6px 14px;
+        border-radius: 8px;
+        transition: background 0.2s;
+      }
+      nav a:hover { background: rgba(255,255,255,0.2); }
+      nav a.active { background: rgba(255,255,255,0.25); font-weight: 700; }
+      .nav-right { margin-left: auto; }
+      .nav-right a { color: #ffd4d4; }
+      .nav-right a:hover { background: rgba(255,80,80,0.3); color: #fff; }
+
+      .page-wrapper {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 0 16px 40px;
+      }
+
+      .card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 16px;
+        padding: 32px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+      }
+      .card h2 {
+        font-size: 1.4rem;
+        color: #1e293b;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .card h2::before { content: "📝"; }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .form-group { display: flex; flex-direction: column; }
+      .form-group.full { grid-column: 1 / -1; }
+
+      label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 6px;
+      }
+      input, select {
+        padding: 10px 14px;
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        font-size: 0.95rem;
+        font-family: 'Inter', sans-serif;
+        transition: border-color 0.2s, box-shadow 0.2s;
+        background: #f8fafc;
+      }
+      input:focus, select:focus {
+        outline: none;
+        border-color: #667eea;
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.15);
+        background: #fff;
+      }
+
+      .btn-submit {
+        grid-column: 1 / -1;
+        padding: 12px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.15s, box-shadow 0.15s;
+        font-family: 'Inter', sans-serif;
+        margin-top: 8px;
+      }
+      .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(102,126,234,0.4);
+      }
+      .btn-submit:active { transform: translateY(0); }
+
+      #msg {
+        grid-column: 1 / -1;
+        text-align: center;
+        font-weight: 600;
+        padding: 10px;
+        border-radius: 8px;
+        margin-top: 4px;
+        transition: opacity 0.3s;
+      }
+      #msg.success { background: #dcfce7; color: #166534; }
+      #msg.error { background: #fee2e2; color: #991b1b; }
+
+      @media (max-width: 600px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .card { padding: 20px; }
+        nav { justify-content: center; }
+        .nav-right { margin-left: 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html" class="active">📥 Input Kas</a>
+      <a href="rekap.html">📊 Rekap</a>
+      <a href="sudah-bayar.html">✅ Sudah Bayar</a>
+      <a href="belum-bayar.html">❌ Belum Bayar</a>
+      <span class="nav-right">
+        <a href="#" onclick="logout()">🚪 Logout</a>
+      </span>
+    </nav>
+
+    <div class="page-wrapper">
+      <div class="card">
+        <h2>Input Kas</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="tanggal">Tanggal</label>
+            <input type="date" id="tanggal" />
+          </div>
+          <div class="form-group">
+            <label for="nama">Nama</label>
+            <select id="nama">
+              <option value="">-- Memuat nama... --</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="bulan">Bulan</label>
+            <select id="bulan">
+              <option value="1">Januari</option>
+              <option value="2">Februari</option>
+              <option value="3">Maret</option>
+              <option value="4">April</option>
+              <option value="5">Mei</option>
+              <option value="6">Juni</option>
+              <option value="7">Juli</option>
+              <option value="8">Agustus</option>
+              <option value="9">September</option>
+              <option value="10">Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Desember</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="tahun">Tahun</label>
+            <input type="number" id="tahun" min="2000" max="2100" />
+          </div>
+          <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status">
+              <option value="Belum Bayar">Belum Bayar</option>
+              <option value="Sudah Bayar">Sudah Bayar</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="keterangan">Keterangan</label>
+            <input type="text" id="keterangan" placeholder="Keterangan..." />
+          </div>
+          <div class="form-group">
+            <label for="kas_masuk">Kas Masuk (Rp)</label>
+            <input type="number" id="kas_masuk" value="0" min="0" />
+          </div>
+          <div class="form-group">
+            <label for="kas_keluar">Kas Keluar (Rp)</label>
+            <input type="number" id="kas_keluar" value="0" min="0" />
+          </div>
+          <button class="btn-submit" onclick="simpanKas()">💾 Simpan Data</button>
+          <div id="msg"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL =
+        "https://script.google.com/macros/s/AKfycbyHb8BxmlKftQMcrDgz82IkDZ2qpoaxJFYmavKHJVhFt34PD0qrjITMp46zU8r1V3C2/exec";
+
+      // cek login
+      if (!localStorage.getItem("role")) {
+        alert("Silakan login terlebih dahulu");
+        window.location.href = "login.html";
+      }
+
+      // auto-fill tanggal, bulan, tahun hari ini + load anggota
+      window.addEventListener("DOMContentLoaded", () => {
+        const now = new Date();
+        document.getElementById("tanggal").value = now.toISOString().slice(0, 10);
+        document.getElementById("bulan").value = String(now.getMonth() + 1);
+        document.getElementById("tahun").value = now.getFullYear();
+        loadAnggota();
+      });
+
+      function loadAnggota() {
+        fetch(API_URL + "?type=anggota")
+          .then((res) => res.json())
+          .then((names) => {
+            const sel = document.getElementById("nama");
+            sel.innerHTML = '<option value="">-- Pilih Nama --</option>';
+            names.forEach((n) => {
+              sel.innerHTML += `<option value="${n}">${n}</option>`;
+            });
+          })
+          .catch(() => {
+            const sel = document.getElementById("nama");
+            sel.innerHTML = '<option value="">Gagal memuat nama</option>';
+          });
+      }
+
+      function simpanKas() {
+        const tanggal = document.getElementById("tanggal").value;
+        const nama = document.getElementById("nama").value;
+        const msgEl = document.getElementById("msg");
+
+        if (!tanggal || !nama) {
+          msgEl.className = "error";
+          msgEl.innerText = "Tanggal dan Nama wajib diisi!";
+          return;
+        }
+
+        const data = {
+          tanggal: tanggal,
+          nama: nama,
+          bulan: document.getElementById("bulan").value,
+          tahun: document.getElementById("tahun").value,
+          status: document.getElementById("status").value,
+          kas_masuk: document.getElementById("kas_masuk").value || "0",
+          kas_keluar: document.getElementById("kas_keluar").value || "0",
+          keterangan: document.getElementById("keterangan").value,
+        };
+
+        msgEl.className = "";
+        msgEl.innerText = "Menyimpan...";
+
+        fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify(data),
+        })
+          .then((res) => res.text())
+          .then(() => {
+            msgEl.className = "success";
+            msgEl.innerText = "✅ Data berhasil disimpan!";
+            // Reset form
+            document.getElementById("nama").value = "";
+            document.getElementById("kas_masuk").value = "0";
+            document.getElementById("kas_keluar").value = "0";
+            document.getElementById("keterangan").value = "";
+          })
+          .catch(() => {
+            msgEl.className = "error";
+            msgEl.innerText = "❌ Gagal menyimpan data";
+          });
+      }
+
+      function logout() {
+        localStorage.removeItem("role");
+        window.location.href = "login.html";
+      }
+    </script>
+  </body>
+</html>

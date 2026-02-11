@@ -1,0 +1,370 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Rekap Kas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      nav {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+      }
+      nav a {
+        color: #fff; text-decoration: none; font-weight: 500;
+        font-size: 0.95rem; padding: 6px 14px; border-radius: 8px;
+        transition: background 0.2s;
+      }
+      nav a:hover { background: rgba(255,255,255,0.2); }
+      nav a.active { background: rgba(255,255,255,0.25); font-weight: 700; }
+
+      .page-wrapper {
+        max-width: 1000px;
+        margin: 30px auto;
+        padding: 0 16px 40px;
+      }
+      .card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        margin-bottom: 24px;
+      }
+      .card h2 {
+        font-size: 1.4rem; color: #1e293b;
+        margin-bottom: 20px;
+        display: flex; align-items: center; gap: 10px;
+      }
+      .card h2::before { content: "📊"; }
+
+      /* Summary Cards */
+      .summary-row {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-bottom: 24px;
+      }
+      .summary-card {
+        border-radius: 12px;
+        padding: 18px;
+        text-align: center;
+      }
+      .summary-card h4 {
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 8px;
+      }
+      .summary-card p { font-size: 1.3rem; font-weight: 700; }
+      .summary-card.in {
+        background: linear-gradient(135deg, #dcfce7, #bbf7d0);
+        color: #166534;
+      }
+      .summary-card.in h4 { color: #15803d; }
+      .summary-card.out {
+        background: linear-gradient(135deg, #fee2e2, #fecaca);
+        color: #991b1b;
+      }
+      .summary-card.out h4 { color: #b91c1c; }
+      .summary-card.balance {
+        background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+        color: #1e40af;
+      }
+      .summary-card.balance h4 { color: #1d4ed8; }
+
+      .filter-bar {
+        display: flex; gap: 12px; flex-wrap: wrap;
+        align-items: end; margin-bottom: 20px;
+      }
+      .filter-bar .form-group { display: flex; flex-direction: column; }
+      .filter-bar label { font-size: 0.8rem; font-weight: 600; color: #475569; margin-bottom: 4px; }
+      .filter-bar select, .filter-bar input {
+        padding: 8px 12px; border: 2px solid #e2e8f0;
+        border-radius: 8px; font-size: 0.9rem;
+        font-family: 'Inter', sans-serif;
+        background: #f8fafc;
+        transition: border-color 0.2s;
+      }
+      .filter-bar select:focus, .filter-bar input:focus {
+        outline: none; border-color: #667eea;
+      }
+
+      /* Chart */
+      .chart-container {
+        background: #fafbff;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 24px;
+        border: 1px solid #e2e8f0;
+      }
+      .chart-container h3 {
+        font-size: 1rem;
+        color: #475569;
+        margin-bottom: 12px;
+      }
+
+      .table-wrapper { overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+      thead th {
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        color: #fff; padding: 12px 14px; text-align: left;
+        font-weight: 600; white-space: nowrap;
+      }
+      thead th:first-child { border-radius: 10px 0 0 0; }
+      thead th:last-child { border-radius: 0 10px 0 0; }
+      tbody td {
+        padding: 11px 14px;
+        border-bottom: 1px solid #f1f5f9;
+        color: #334155;
+      }
+      tbody tr:hover { background: #f0f4ff; }
+      tfoot td {
+        padding: 12px 14px;
+        font-weight: 700;
+        background: #f8fafc;
+        border-top: 2px solid #e2e8f0;
+      }
+      .saldo-cell { font-weight: 700; }
+      .empty-msg {
+        text-align: center; padding: 40px 20px;
+        color: #94a3b8; font-size: 0.95rem;
+      }
+
+      @media (max-width: 600px) {
+        .card { padding: 16px; }
+        nav { justify-content: center; }
+        .summary-row { grid-template-columns: 1fr; }
+        thead th, tbody td { padding: 8px 10px; font-size: 0.8rem; }
+        .summary-card p { font-size: 1.1rem; }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html">📥 Input Kas</a>
+      <a href="rekap.html" class="active">📊 Rekap</a>
+      <a href="sudah-bayar.html">✅ Sudah Bayar</a>
+      <a href="belum-bayar.html">❌ Belum Bayar</a>
+    </nav>
+
+    <div class="page-wrapper">
+      <div class="card">
+        <h2>Rekapitulasi Kas</h2>
+
+        <div class="filter-bar">
+          <div class="form-group">
+            <label for="filterBulan">Bulan</label>
+            <select id="filterBulan" onchange="loadRekap()">
+              <option value="">Semua</option>
+              <option value="1">Januari</option>
+              <option value="2">Februari</option>
+              <option value="3">Maret</option>
+              <option value="4">April</option>
+              <option value="5">Mei</option>
+              <option value="6">Juni</option>
+              <option value="7">Juli</option>
+              <option value="8">Agustus</option>
+              <option value="9">September</option>
+              <option value="10">Oktober</option>
+              <option value="11">November</option>
+              <option value="12">Desember</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="filterTahun">Tahun</label>
+            <input type="number" id="filterTahun" min="2000" max="2100" onchange="loadRekap()" />
+          </div>
+        </div>
+
+        <!-- Summary -->
+        <div class="summary-row">
+          <div class="summary-card in">
+            <h4>Total Kas Masuk</h4>
+            <p id="totalMasuk">Rp 0</p>
+          </div>
+          <div class="summary-card out">
+            <h4>Total Kas Keluar</h4>
+            <p id="totalKeluar">Rp 0</p>
+          </div>
+          <div class="summary-card balance">
+            <h4>Saldo Akhir</h4>
+            <p id="saldoAkhir">Rp 0</p>
+          </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="chart-container">
+          <h3>📈 Grafik Kas</h3>
+          <canvas id="kasChart" style="max-height: 350px"></canvas>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Tanggal</th>
+                <th>Nama</th>
+                <th>Keterangan</th>
+                <th>Kas Masuk</th>
+                <th>Kas Keluar</th>
+                <th>Saldo</th>
+              </tr>
+            </thead>
+            <tbody id="tabelRekap"></tbody>
+            <tfoot>
+              <tr>
+                <td colspan="3" style="text-align: right">Total:</td>
+                <td id="footMasuk">Rp 0</td>
+                <td id="footKeluar">Rp 0</td>
+                <td id="footSaldo">Rp 0</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+      const API_URL =
+        "https://script.google.com/macros/s/AKfycbyHb8BxmlKftQMcrDgz82IkDZ2qpoaxJFYmavKHJVhFt34PD0qrjITMp46zU8r1V3C2/exec";
+
+      function rupiah(number) {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency", currency: "IDR", minimumFractionDigits: 0,
+        }).format(number);
+      }
+
+      let kasChartInstance = null;
+
+      function loadRekap() {
+        const bulan = document.getElementById("filterBulan").value;
+        const tahun = document.getElementById("filterTahun").value;
+        const tbody = document.getElementById("tabelRekap");
+        tbody.innerHTML = '<tr><td colspan="6" class="empty-msg">Memuat data...</td></tr>';
+
+        fetch(API_URL)
+          .then((res) => res.json())
+          .then((data) => {
+            tbody.innerHTML = "";
+            let saldo = 0, totalMasuk = 0, totalKeluar = 0;
+
+            let filteredData = data;
+            if (bulan) filteredData = filteredData.filter((d) => String(d.Bulan) == bulan);
+            if (tahun) filteredData = filteredData.filter((d) => String(d.Tahun) == tahun);
+            filteredData.sort((a, b) => new Date(a.Tanggal) - new Date(b.Tanggal));
+
+            if (filteredData.length === 0) {
+              tbody.innerHTML = '<tr><td colspan="6" class="empty-msg">Tidak ada data</td></tr>';
+              document.getElementById("totalMasuk").innerText = rupiah(0);
+              document.getElementById("totalKeluar").innerText = rupiah(0);
+              document.getElementById("saldoAkhir").innerText = rupiah(0);
+              document.getElementById("footMasuk").innerText = rupiah(0);
+              document.getElementById("footKeluar").innerText = rupiah(0);
+              document.getElementById("footSaldo").innerText = rupiah(0);
+              updateChart([]);
+              return;
+            }
+
+            filteredData.forEach((d) => {
+              const masuk = Number(d.Kas_Masuk || 0);
+              const keluar = Number(d.Kas_Keluar || 0);
+              totalMasuk += masuk;
+              totalKeluar += keluar;
+              saldo += masuk - keluar;
+
+              tbody.innerHTML += `
+                <tr>
+                  <td>${d.Tanggal || "-"}</td>
+                  <td>${d.Nama || "-"}</td>
+                  <td>${d.Keterangan || "-"}</td>
+                  <td>${rupiah(masuk)}</td>
+                  <td>${rupiah(keluar)}</td>
+                  <td class="saldo-cell">${rupiah(saldo)}</td>
+                </tr>`;
+            });
+
+            document.getElementById("totalMasuk").innerText = rupiah(totalMasuk);
+            document.getElementById("totalKeluar").innerText = rupiah(totalKeluar);
+            document.getElementById("saldoAkhir").innerText = rupiah(saldo);
+            document.getElementById("footMasuk").innerText = rupiah(totalMasuk);
+            document.getElementById("footKeluar").innerText = rupiah(totalKeluar);
+            document.getElementById("footSaldo").innerText = rupiah(saldo);
+
+            updateChart(filteredData);
+          })
+          .catch((err) => {
+            console.error("Gagal mengambil data:", err);
+            tbody.innerHTML = '<tr><td colspan="6" class="empty-msg">Gagal memuat data</td></tr>';
+          });
+      }
+
+      function updateChart(filteredData) {
+        const labels = filteredData.map((d) => d.Tanggal || "");
+        const masukData = filteredData.map((d) => Number(d.Kas_Masuk || 0));
+        const keluarData = filteredData.map((d) => Number(d.Kas_Keluar || 0));
+
+        const ctx = document.getElementById("kasChart").getContext("2d");
+        if (kasChartInstance) kasChartInstance.destroy();
+
+        kasChartInstance = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [
+              {
+                label: "Kas Masuk",
+                data: masukData,
+                backgroundColor: "rgba(34, 197, 94, 0.7)",
+                borderColor: "rgba(34, 197, 94, 1)",
+                borderWidth: 1,
+                borderRadius: 6,
+              },
+              {
+                label: "Kas Keluar",
+                data: keluarData,
+                backgroundColor: "rgba(239, 68, 68, 0.7)",
+                borderColor: "rgba(239, 68, 68, 1)",
+                borderWidth: 1,
+                borderRadius: 6,
+              },
+            ],
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: { position: "top" },
+            },
+            scales: {
+              y: {
+                beginAtZero: true,
+                ticks: {
+                  callback: (v) => "Rp " + v.toLocaleString("id-ID"),
+                },
+              },
+            },
+          },
+        });
+      }
+
+      window.onload = () => {
+        document.getElementById("filterTahun").value = new Date().getFullYear();
+        loadRekap();
+      };
+    </script>
+  </body>
+</html>
