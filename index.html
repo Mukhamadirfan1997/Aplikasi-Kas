@@ -3,8 +3,13 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="manifest" href="manifest.json">
     <title>Input Kas</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kas OPS Rejoso">
+    <link rel="apple-touch-icon" href="opsrejoso.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <style>
       * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -203,15 +208,6 @@
         </div>
       </div>
     </div>
-    <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
-        .then(reg => console.log('SW Registered'))
-        .catch(err => console.log('SW Error: ', err));
-    });
-  }
-</script>
 
     <script>
       const API_URL =
@@ -298,6 +294,12 @@
         window.location.href = "login.html";
       }
     </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(() => console.log('SW registered'))
+          .catch((err) => console.log('SW registration failed:', err));
+      }
+    </script>
   </body>
 </html>
-
