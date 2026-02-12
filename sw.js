@@ -1,8 +1,14 @@
-self.addEventListener('install', (e) => {
-  console.log('Service Worker: Installed');
+const CACHE_NAME = 'kas-v1';
+const urlsToCache = ['/'];
+
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
+  );
 });
 
-self.addEventListener('fetch', (e) => {
-  // Biarkan aplikasi mengambil data dari internet seperti biasa
-  e.respondWith(fetch(e.request));
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request).then(response => response || fetch(event.request))
+  );
 });
