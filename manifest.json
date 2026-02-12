@@ -1,17 +1,47 @@
 {
-  "name": "Aplikasi Kas OPS REJOSO",
-  "short_name": "KasRejoso",
-  "description": "Aplikasi Pencatatan Kas OPS REJOSO",
-  "start_url": "/",
+  "name": "Aplikasi Kas OPS Rejoso",
+  "short_name": "Kas OPS",
+  "description": "Aplikasi Pencatatan Kas Sekolah OPS Rejoso",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "orientation": "portrait",
+  "background_color": "#764ba2",
+  "theme_color": "#667eea",
+  "categories": ["finance", "education"],
   "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
     {
       "src": "opsrejoso.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Input Kas",
+      "short_name": "Input",
+      "url": "./index.html",
+      "icons": [{ "src": "icon-192.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Rekap Kas",
+      "short_name": "Rekap",
+      "url": "./rekap.html",
+      "icons": [{ "src": "icon-192.svg", "sizes": "192x192" }]
     }
   ]
 }
