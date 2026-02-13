@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Checklist Pembayaran</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#667eea">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Kas OPS Rejoso">
+    <link rel="apple-touch-icon" href="opsrejoso.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+      * { box-sizing: border-box; margin: 0; padding: 0; }
+      body {
+        font-family: 'Inter', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+      }
+      nav {
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        padding: 14px 24px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        border-bottom: 1px solid rgba(255,255,255,0.2);
+      }
+      nav a {
+        color: #fff; text-decoration: none; font-weight: 500;
+        font-size: 0.95rem; padding: 6px 14px; border-radius: 8px;
+        transition: background 0.2s;
+      }
+      nav a:hover { background: rgba(255,255,255,0.2); }
+      nav a.active { background: rgba(255,255,255,0.25); font-weight: 700; }
+      
+      .page-wrapper {
+        max-width: 1200px;
+        margin: 30px auto;
+        padding: 0 16px 40px;
+      }
+      .card {
+        background: rgba(255,255,255,0.95);
+        border-radius: 16px;
+        padding: 28px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+        overflow: hidden;
+      }
+      .card h2 {
+        font-size: 1.4rem; color: #1e293b;
+        margin-bottom: 20px;
+        display: flex; align-items: center; gap: 10px;
+      }
+      .card h2::before { content: "📋"; }
+
+      .filter-bar {
+        display: flex; gap: 12px; margin-bottom: 20px; align-items: center;
+      }
+      .filter-bar label { font-weight: 600; color: #475569; }
+      .filter-bar input {
+        padding: 8px 12px; border: 2px solid #e2e8f0;
+        border-radius: 8px; font-family: inherit; font-size: 0.95rem;
+      }
+      .filter-bar button {
+        padding: 8px 16px; 
+        background: #667eea; 
+        color: white; 
+        border: none; 
+        border-radius: 8px; 
+        cursor: pointer; 
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .filter-bar button:hover { background: #5a67d8; }
+
+      /* Checklist Table */
+      .table-wrapper {
+        overflow-x: auto;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        max-height: 70vh; /* Allow vertical scroll */
+        position: relative;
+      }
+      table {
+        width: 100%;
+        border-collapse: separate; /* Required for sticky headers to work well */
+        border-spacing: 0;
+        font-size: 0.85rem;
+        white-space: nowrap;
+      }
+      th, td {
+        padding: 10px;
+        border: 1px solid #cbd5e1;
+        text-align: center;
+      }
+      
+      /* Sticky Header */
+      thead th {
+        background: #f1f5f9;
+        color: #334155;
+        font-weight: 700;
+        position: sticky;
+        top: 0;
+        z-index: 10;
+        border-bottom: 2px solid #94a3b8;
+      }
+      
+      /* Sticky First & Second Column (No & Name) */
+      /* Column 1: No */
+      th:nth-child(1), td:nth-child(1) {
+        position: sticky;
+        left: 0;
+        background: #fff;
+        z-index: 5;
+        border-right: 1px solid #cbd5e1;
+      }
+      /* Column 2: Name */
+      th:nth-child(2), td:nth-child(2) {
+        position: sticky;
+        left: 50px; /* Adjust based on width of 1st column */
+        background: #fff;
+        z-index: 5;
+        text-align: left;
+        min-width: 150px;
+        border-right: 2px solid #94a3b8;
+      }
+      /* Fix z-index for intersection of sticky row/col */
+      thead th:nth-child(1), thead th:nth-child(2) {
+        z-index: 20;
+        background: #e2e8f0;
+      }
+
+      tbody tr:nth-child(even) td { background: #f8fafc; }
+      /* Ensure sticky columns have correct background even on even rows */
+      tbody tr:nth-child(even) td:nth-child(1),
+      tbody tr:nth-child(even) td:nth-child(2) { background: #f8fafc; }
+
+      tbody tr:hover td { background: #eff6ff; }
+      /* Maintain sticky background on hover */
+      tbody tr:hover td:nth-child(1),
+      tbody tr:hover td:nth-child(2) { background: #eff6ff; }
+
+      .check {
+        color: #166534;
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+      .empty-msg { padding: 40px; color: #64748b; text-align: center; }
+
+      @media (max-width: 600px) {
+        .card { padding: 16px; }
+        nav { justify-content: center; }
+        th, td { padding: 6px 8px; font-size: 0.75rem; }
+        
+        /* Adjust sticky positioning for mobile if needed */
+        th:nth-child(2), td:nth-child(2) {
+          left: 40px; /* narrowed "No" column */
+          max-width: 120px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <nav>
+      <a href="index.html">📥 Input Kas</a>
+      <a href="rekap.html">📊 Rekap</a>
+      <a href="checklist.html" class="active">📋 Checklist</a>
+      <a href="sudah-bayar.html">✅ Sudah Bayar</a>
+      <a href="belum-bayar.html">❌ Belum Bayar</a>
+    </nav>
+
+    <div class="page-wrapper">
+      <div class="card">
+        <h2>Checklist Pembayaran</h2>
+        
+        <div class="filter-bar">
+          <label for="filterTahun">Tahun:</label>
+          <input type="number" id="filterTahun" min="2000" max="2100" />
+          <button onclick="loadChecklist()">Tampilkan</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table id="checklistTable">
+            <thead>
+              <tr>
+                <th style="min-width: 40px;">No</th>
+                <th style="min-width: 150px;">Nama</th>
+                <th>Jan</th>
+                <th>Feb</th>
+                <th>Mar</th>
+                <th>Apr</th>
+                <th>Mei</th>
+                <th>Jun</th>
+                <th>Jul</th>
+                <th>Agt</th>
+                <th>Sep</th>
+                <th>Okt</th>
+                <th>Nov</th>
+                <th>Des</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyChecklist">
+              <tr><td colspan="14" class="empty-msg">Memuat data...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const API_URL =
+        "https://script.google.com/macros/s/AKfycbyHb8BxmlKftQMcrDgz82IkDZ2qpoaxJFYmavKHJVhFt34PD0qrjITMp46zU8r1V3C2/exec";
+
+      let allData = [];
+      let allMembers = [];
+      let isLoaded = false;
+
+      async function fetchData() {
+         try {
+            const [membersRes, dataRes] = await Promise.all([
+              fetch(API_URL + "?type=anggota"),
+              fetch(API_URL)
+            ]);
+            allMembers = await membersRes.json();
+            allData = await dataRes.json();
+            isLoaded = true;
+         } catch (err) {
+            console.error(err);
+            throw err;
+         }
+      }
+
+      async function loadChecklist() {
+        const tahun = document.getElementById("filterTahun").value;
+        const tbody = document.getElementById("tbodyChecklist");
+        tbody.innerHTML = '<tr><td colspan="14" class="empty-msg">Memuat data...</td></tr>';
+
+        try {
+          if (!isLoaded) {
+            await fetchData();
+          }
+          renderTable(tahun);
+        } catch (err) {
+          console.error("Error loading data:", err);
+          tbody.innerHTML = '<tr><td colspan="14" class="empty-msg" style="color:red">Gagal memuat data. Periksa koneksi internet.</td></tr>';
+        }
+      }
+
+      function renderTable(tahun) {
+        const tbody = document.getElementById("tbodyChecklist");
+        tbody.innerHTML = "";
+
+        if (!allMembers || allMembers.length === 0) {
+           tbody.innerHTML = '<tr><td colspan="14" class="empty-msg">Tidak ada data anggota.</td></tr>';
+           return;
+        }
+
+        // 1. Build a map for easy lookup: Member -> Set of Months Paid
+        const paymentMap = {}; // { "Nama Member": Set(1, 2, 5) }
+        
+        let matchCount = 0;
+
+        allData.forEach(d => {
+          // Normalize data
+          const status = (d.Status || "").trim();
+          const dTahun = String(d.Tahun || "");
+          const bulan = parseInt(d.Bulan); // Handle "01" or 1
+          const nama = (d.Nama || "").trim();
+
+          // Check if transaction matches the year and status
+          // Note: loose comparison for status to be safe, though "Sudah Bayar" is exact in input
+          if (dTahun === String(tahun) && status.toLowerCase() === "sudah bayar" && nama) {
+             if (!paymentMap[nama]) paymentMap[nama] = new Set();
+             if (!isNaN(bulan)) {
+                paymentMap[nama].add(bulan);
+                matchCount++;
+             }
+          }
+        });
+        
+        console.log(`Found ${matchCount} matching payment records for year ${tahun}`);
+
+        // 2. Iterate members and build rows
+        allMembers.forEach((rawMember, index) => {
+          const member = (rawMember || "").trim();
+          if (!member) return;
+
+          const paidMonths = paymentMap[member] || new Set();
+          
+          let rowHtml = `<tr>
+              <td>${index + 1}</td>
+              <td style="font-weight: 500">${member}</td>`;
+
+          // Columns for Jan (1) to Des (12)
+          for (let m = 1; m <= 12; m++) {
+            const isPaid = paidMonths.has(m);
+            // Use checkmark if paid
+            rowHtml += `<td>${isPaid ? '<span class="check">✓</span>' : ''}</td>`;
+          }
+
+          rowHtml += `</tr>`;
+          tbody.innerHTML += rowHtml;
+        });
+
+        if (tbody.innerHTML === "") {
+             tbody.innerHTML = '<tr><td colspan="14" class="empty-msg">Tidak ada data untuk ditampilkan.</td></tr>';
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        document.getElementById("filterTahun").value = new Date().getFullYear();
+        loadChecklist();
+      });
+      
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(() => console.log('SW registered'))
+          .catch((err) => console.log('SW registration failed:', err));
+      }
+    </script>
+  </body>
+</html>
