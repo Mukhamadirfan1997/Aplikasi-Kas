@@ -1,4 +1,4 @@
-<!doctype html>
+<!-- <!doctype html>
 <html lang="id">
   <head>
     <meta charset="UTF-8" />
@@ -221,5 +221,95 @@
       }
     </script>
   </body>
+</html>
+
+ -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Halaman Maintenance</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #74ebd5, #ACB6E5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #fff;
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            animation: bounce 2s infinite;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+        }
+
+        a {
+            text-decoration: none;
+            color: #74ebd5;
+            background-color: #fff;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: transform 0.2s, background-color 0.3s;
+        }
+
+        a:hover {
+            background-color: #e0e0e0;
+            transform: scale(1.05);
+        }
+
+        /* Animations */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Illustration (gear animation) */
+        .gear {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            display: inline-block;
+            animation: spin 3s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="gear">⚙️</div>
+        <h1>Sedang Maintenance</h1>
+        <p>Halaman ini sedang diperbarui. Mohon bersabar dan coba lagi nanti.</p>
+        <a href="index.html">Kembali ke Beranda</a>
+    </div>
+</body>
 </html>
 
